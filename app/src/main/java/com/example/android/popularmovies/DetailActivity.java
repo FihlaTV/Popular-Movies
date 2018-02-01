@@ -15,6 +15,8 @@ public class DetailActivity extends AppCompatActivity {
     private TextView movie_date;
     private RatingBar movie_rating;
     private TextView movie_synopsis;
+    private TextView movie_review_content;
+    private TextView movie_review_author;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,18 @@ public class DetailActivity extends AppCompatActivity {
 
         movie_rating = (RatingBar) findViewById(R.id.ratingBar);
         movie_rating.setRating(rounded_rating);
+
+        movie_review_content = (TextView) findViewById(R.id.review_content);
+        if(extras.getString("EXTRA_CURRENT_REVIEW_CONTENT").equals(null)){
+            movie_review_content.setText("No reviews found.");
+        }
+        else{
+            movie_review_content.setText("'"+extras.getString("EXTRA_CURRENT_REVIEW_CONTENT")+"'");
+        }
+
+        movie_review_author = findViewById(R.id.review_author);
+        movie_review_author.setText(extras.getString("EXTRA_CURRENT_REVIEW_AUTHOR"));
+
 
         movie_poster = (ImageView) findViewById(R.id.detail_poster);
         Picasso.with(this).load(extras.getString("EXTRA_CURRENT_IMAGE")).resize(600, 0).into(movie_poster);

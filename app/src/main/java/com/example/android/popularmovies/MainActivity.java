@@ -55,6 +55,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         loadMovies(requestURL_default);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -115,6 +124,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         extras.putString("EXTRA_CURRENT_RELEASE", thisMovie.getDate());
         extras.putString("EXTRA_CURRENT_VOTE", thisMovie.getVoteAvg());
         extras.putString("EXTRA_CURRENT_SYNOPSIS", thisMovie.getSynopsis());
+        extras.putString("EXTRA_CURRENT_REVIEW_AUTHOR", thisMovie.getReviewAuthor());
+        extras.putString("EXTRA_CURRENT_REVIEW_CONTENT", thisMovie.getReviewContent());
+        extras.putString("EXTRA_CURRENT_REVIEW_URL",thisMovie.getReviewURL());
+        extras.putString("EXTRA_CURRENT_YOUTUBE_URL", thisMovie.getYoutube_URL());
 
         intent.putExtras(extras);
         startActivity(intent);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
@@ -11,6 +12,7 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="10dp"
         android:clickable="true"
+        app:backgroundTint="@color/colorPrimaryDark"
         app:elevation="7dp"
         app:srcCompat="@android:drawable/btn_star" />
 
@@ -22,84 +24,190 @@
     android:background="#333438">
 
 
-
-
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#333438"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:scrollbars="vertical"
-        tools:context="com.example.android.popularmovies_1.DetailActivity">
-
-        <ImageView
-            android:id="@+id/detail_poster"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_weight="0.30"
-            app:srcCompat="@mipmap/ic_launcher"
-            android:outlineProvider="paddedBounds"
-            android:elevation="5dp"
-            android:contentDescription="Poster here..."/>
-
-        <TextView
-            android:id="@+id/detail_title"
-            android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:layout_gravity="bottom"
-            android:layout_margin="5dp"
-            android:layout_weight="0.30"
-            android:autoSizeMaxTextSize="46dp"
-            android:autoSizeTextType="uniform"
-            android:fontFamily="sans-serif"
-            android:text="@string/Title"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"
-            android:textSize="36sp"
-            android:textStyle="bold" />
-
-
-        <RatingBar
-            android:id="@+id/ratingBar"
-            style="@style/Widget.AppCompat.RatingBar.Indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_weight="0.30"
-            android:clickable="false" />
-
-        <TextView
-            android:id="@+id/detail_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="5dp"
-            android:autoText="false"
-            android:fontFamily="sans-serif"
-            android:text="@string/release_date"
-            android:textColor="#fff"
-            android:textSize="18sp"
-            android:textStyle="bold|italic" />
-
-        <TextView
-            android:id="@+id/detail_synopsis"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="0.30"
-            android:backgroundTint="@android:color/white"
-            android:text="@string/synopsis"
-            android:textColor="#fff"
-            android:textSize="16sp" />
+            android:background="#333438"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:scrollbars="vertical"
+            tools:context="com.example.android.popularmovies_1.DetailActivity">
 
-    </LinearLayout>
-</ScrollView>
+            <ImageView
+                android:id="@+id/detail_poster"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="0.30"
+                android:contentDescription="Poster here..."
+                android:elevation="5dp"
+                android:outlineProvider="paddedBounds"
+                app:srcCompat="@mipmap/ic_launcher" />
+
+            <TextView
+                android:id="@+id/detail_title"
+                android:layout_width="match_parent"
+                android:layout_height="41dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:layout_weight="0.30"
+                android:autoSizeMaxTextSize="46dp"
+                android:autoSizeTextType="uniform"
+                android:fontFamily="sans-serif"
+                android:text="@string/Title"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="36sp"
+                android:textStyle="bold" />
+
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="@style/Widget.AppCompat.RatingBar.Indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_weight="0.30"
+                android:clickable="false" />
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/trailer_card"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="0.30"
+                app:cardBackgroundColor="@color/cardview_dark_background"
+                app:cardElevation="5dp"
+                app:contentPadding="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/video_play"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:layout_weight="0.5"
+                        android:text="Watch Trailer"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:textColor="#FFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/imageButton"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_margin="10dp"
+                        android:layout_weight="1"
+                        android:background="@color/cardview_dark_background"
+                        app:srcCompat="@android:drawable/ic_media_play" />
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="0.30"
+                app:cardBackgroundColor="@color/cardview_dark_background"
+                app:cardElevation="5dp"
+                app:contentPadding="8dp" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/detail_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:autoText="false"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/release_date"
+                        android:textColor="#fff"
+                        android:textSize="18sp"
+                        android:textStyle="bold|italic" />
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.30"
+                        app:srcCompat="@color/cardview_light_background" />
+
+                    <TextView
+                        android:id="@+id/detail_synopsis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_weight="0.30"
+                        android:backgroundTint="@android:color/white"
+                        android:text="@string/synopsis"
+                        android:textColor="#fff"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/review_card"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="0.30"
+                app:cardBackgroundColor="@color/cardview_dark_background"
+                app:cardElevation="5dp"
+                app:contentPadding="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/review_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:ellipsize="end"
+                        android:maxLines="8"
+                        android:text="Review Content"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="italic" />
+
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.30"
+                        app:srcCompat="@color/cardview_light_background" />
+
+                    <TextView
+                        android:id="@+id/review_author"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="Author"
+                        android:textColor="#FFF"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>
