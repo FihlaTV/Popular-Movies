@@ -124,11 +124,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         extras.putString("EXTRA_CURRENT_RELEASE", thisMovie.getDate());
         extras.putString("EXTRA_CURRENT_VOTE", thisMovie.getVoteAvg());
         extras.putString("EXTRA_CURRENT_SYNOPSIS", thisMovie.getSynopsis());
-        extras.putString("EXTRA_CURRENT_REVIEW_AUTHOR", thisMovie.getReviewAuthor());
-        extras.putString("EXTRA_CURRENT_REVIEW_CONTENT", thisMovie.getReviewContent());
-        extras.putString("EXTRA_CURRENT_REVIEW_URL",thisMovie.getReviewURL());
-        extras.putString("EXTRA_CURRENT_YOUTUBE_URL", thisMovie.getYoutube_URL());
-
+        if(thisMovie.getReviewAuthor()!=null||thisMovie.getReviewContent()!=null||thisMovie.getReviewURL()!=null) {
+            extras.putString("EXTRA_CURRENT_REVIEW_AUTHOR", thisMovie.getReviewAuthor());
+            extras.putString("EXTRA_CURRENT_REVIEW_CONTENT", thisMovie.getReviewContent());
+            extras.putString("EXTRA_CURRENT_REVIEW_URL", thisMovie.getReviewURL());
+        }
+        else{
+            extras.putString("EXTRA_CURRENT_REVIEW_AUTHOR", null);
+            extras.putString("EXTRA_CURRENT_REVIEW_CONTENT", null);
+            extras.putString("EXTRA_CURRENT_REVIEW_URL", null);
+        }
+        if(thisMovie.getYoutube_URL()!=null) {
+            extras.putString("EXTRA_CURRENT_YOUTUBE_URL", thisMovie.getYoutube_URL());
+        }
+        else{
+            extras.putString("EXTRA_CURRENT_YOUTUBE_URL", null);
+        }
         intent.putExtras(extras);
         startActivity(intent);
     }
