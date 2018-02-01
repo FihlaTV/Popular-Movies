@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="Title">Title</string>
+    <string name="release_date">Release Date</string>
+    <string name ="synopsis">Synopsis</string>
+    <string name = "empty">Empty</string>
+    <string name = "most_popular_menu">Most popular</string>
+    <string name="top_rated_menu">Top rated</string>
+    <string name="favourites_menu">Favourites</string>
+</resources>
