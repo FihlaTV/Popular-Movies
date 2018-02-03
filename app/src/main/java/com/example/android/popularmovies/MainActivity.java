@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         if (clickedID == favID){
             getLoaderManager().initLoader(1, null, this);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -158,9 +159,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         progressBar.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        Empty.setVisibility(View.GONE);
-
+        mRecyclerView.setVisibility(View.GONE);
         return new CursorLoader(this,
                 MovieContract.MovieEntry.CONTENT_URI,
                 null,
@@ -172,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         ArrayList<MovieDataClass> moviesFromDB = new ArrayList<>();
+        cursor.moveToFirst();
         while(cursor.moveToNext()){
             int movieNameColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_NAME);
             int moviePosterColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER);
@@ -204,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     private void setupDatabaseView(ArrayList<MovieDataClass> movieListFromDB){
