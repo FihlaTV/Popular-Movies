@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     //Put the API key here
-    private String key = "3ad2cee013539194fa7e2ad8bc225dea";
+    private String key = "";
 
     private String LOG_TAG;
     private Toast mToast;
