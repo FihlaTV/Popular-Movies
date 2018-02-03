@@ -1,6 +1,8 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private ArrayList<String> imageURLs = new ArrayList<>(10);
     private Context activity_context;
     private ArrayList<MovieDataClass> movieList;
+    private ArrayList<MovieDataClass> movieListFromDb=null;
 
     private final MovieAdapterOnClickHandler handler;
 
@@ -40,6 +43,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 imageURLs.add(i, movieList.get(i).getImageURL());
             }
             notifyDataSetChanged();
+        }
+    }
+
+    void setImageBitmaps (ArrayList<MovieDataClass> movieList){
+        movieListFromDb = movieList;
+        if(movieListFromDb == null){
+            Log.e(LOG_TAG, "movieList from DB passed as null");
         }
     }
 
@@ -63,9 +73,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
 
-        if (imageURLs == null) {
-            holder.moviePoster.setImageResource(R.mipmap.ic_launcher);
-            //Picasso.with(activity_context).load("http://i.imgur.com/DvpvklR.png").into(holder.moviePoster);
+        if (movieListFromDb!=null) {
+            MovieDataClass currentMovie = movieListFromDb.get(position);
+            byte[] bitmapData = currentMovie.getMovie_poster_db();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
+            holder.moviePoster.setImageBitmap(bitmap);
+
         } else {
             String currentImageURL = imageURLs.get(position);
             Picasso.with(activity_context).load(currentImageURL).into(holder.moviePoster);
@@ -74,11 +87,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public int getItemCount() {
-        if (imageURLs == null) {
-            return 1;
+        if (imageURLs != null && movieListFromDb==null) {
+            return imageURLs.size();
         }
-
-        return imageURLs.size();
+        else return movieListFromDb.size();
     }
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -94,8 +106,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            MovieDataClass dataForThisMovie = movieList.get(adapterPosition);
-            handler.onClick(dataForThisMovie);
+            if(imageURLs!=null) {
+                MovieDataClass dataForThisMovie = movieList.get(adapterPosition);
+                handler.onClick(dataForThisMovie);
+            }
+            else{
+             MovieDataClass dataForThisMovie = movieListFromDb.get(adapterPosition);
+             handler.onClick(dataForThisMovie);
+            }
         }
     }
 

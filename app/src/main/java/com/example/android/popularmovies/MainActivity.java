@@ -2,7 +2,10 @@ package com.example.android.popularmovies;
 
 
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -21,9 +24,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.data.MovieContract;
+
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, android.app.LoaderManager.LoaderCallbacks<Cursor> {
 
     //Put the API key here
     private String key = "";
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private String LOG_TAG;
     private Toast mToast;
     private MovieAdapter movieAdapter;
+    private MovieAdapter movieAdapterForDb;
     private RecyclerView mRecyclerView;
     private String request_url_popular = "http://api.themoviedb.org/3/movie/popular?api_key=" + key;
     private String request_url_top_rated = "http://api.themoviedb.org/3/movie/top_rated?api_key=" + key;
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
         movieAdapter = new MovieAdapter(this, this);
+        movieAdapterForDb = new MovieAdapter(this, this);
         String requestURL_default = "http://api.themoviedb.org/3/movie/popular?api_key=" + key;
         Empty = (TextView) findViewById(R.id.empty);
         progressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
@@ -75,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public boolean onOptionsItemSelected(MenuItem item) {
         int popularID = R.id.action_most_popular;
         int topID = R.id.action_top_rated;
+        int favID = R.id.action_favourites;
         int clickedID = item.getItemId();
         if (clickedID == popularID) {
             loadMovies(request_url_popular);
@@ -84,6 +92,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if (clickedID == topID) {
             loadMovies(request_url_top_rated);
             return true;
+        }
+
+        if (clickedID == favID){
+            getLoaderManager().initLoader(1, null, this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -143,6 +155,71 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(intent);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        progressBar.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        Empty.setVisibility(View.GONE);
+
+        return new CursorLoader(this,
+                MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        ArrayList<MovieDataClass> moviesFromDB = new ArrayList<>();
+        while(cursor.moveToNext()){
+            int movieNameColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_NAME);
+            int moviePosterColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER);
+            int movieRatingColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING);
+            int movieTrailerColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TRAILER_LINK);
+            int movieReleaseDateColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE);
+            int movieSynopsisColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_SYNOPSIS);
+            int movieReviewContentColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_CONTENT);
+            int movieReviewAuthorColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_AUTHOR);
+            int movieReviewLinkColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_LINK);
+
+            MovieDataClass movie = new MovieDataClass(
+                    cursor.getString(movieNameColumnIndex),
+                    cursor.getString(movieReleaseDateColumnIndex),
+                    cursor.getString(movieRatingColumnIndex),
+                    cursor.getString(movieSynopsisColumnIndex),
+                    cursor.getBlob(moviePosterColumnIndex),
+                    cursor.getString(movieReviewAuthorColumnIndex),
+                    cursor.getString(movieReviewContentColumnIndex),
+                    cursor.getString(movieReviewLinkColumnIndex),
+                    cursor.getString(movieTrailerColumnIndex)
+                   );
+
+            moviesFromDB.add(movie);
+
+        }
+        setupDatabaseView(moviesFromDB);
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    private void setupDatabaseView(ArrayList<MovieDataClass> movieListFromDB){
+        if(movieListFromDB==null){
+            progressBar.setVisibility(View.GONE);
+            Empty.setVisibility(View.VISIBLE);
+            return;
+        }
+        movieAdapterForDb.setImageBitmaps(movieListFromDB);
+        mRecyclerView.setAdapter(movieAdapterForDb);
+        progressBar.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+
+    }
+
     private class MovieTask extends AsyncTask<String, Void, ArrayList<MovieDataClass>> {
         @Override
         protected void onPreExecute() {
@@ -181,4 +258,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             }
         }
     }
+
 }
