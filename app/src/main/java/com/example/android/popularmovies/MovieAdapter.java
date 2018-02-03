@@ -33,7 +33,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         this.movieList = movieList;
         if (movieList == null) {
-            Log.e(LOG_TAG, "movieList passes as null in Adapter.");
+            Log.e(LOG_TAG, "movieList passed as null in Adapter.");
         } else {
             imageURLs.clear();
             for (int i = 0; i < movieList.size(); i++) {
