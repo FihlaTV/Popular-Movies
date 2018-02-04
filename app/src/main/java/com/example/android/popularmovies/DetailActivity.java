@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final Bundle extras = intent.getExtras();
         super.setTitle("Details about " + extras.getString("EXTRA_CURRENT_NAME"));
+        Boolean loadingFromDB = extras.getBoolean("LOAD_FROM_DATABASE");
 
         movie_name = (TextView) findViewById(R.id.detail_title);
         movie_name.setText(extras.getString("EXTRA_CURRENT_NAME"));
@@ -75,8 +77,14 @@ public class DetailActivity extends AppCompatActivity {
 
 
         movie_poster = (ImageView) findViewById(R.id.detail_poster);
-        Picasso.with(this).load(extras.getString("EXTRA_CURRENT_IMAGE")).resize(600, 0).into(movie_poster);
-
+        if(loadingFromDB==false) {
+            Picasso.with(this).load(extras.getString("EXTRA_CURRENT_IMAGE")).into(movie_poster);
+        }
+        if(loadingFromDB==true){
+            byte[] bitmapData = extras.getByteArray("EXTRA_CURRENT_IMAGE");
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
+            movie_poster.setImageBitmap(bitmap);
+        }
         movie_trailer_button = findViewById(R.id.trailer_button);
         movie_trailer_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,18 +177,10 @@ public class DetailActivity extends AppCompatActivity {
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_AUTHOR, movieReviewAuthor);
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_LINK, movieReviewLink);
 
-        //add if to check if current movie uri is null here...
-//        String[] selectionArgs = {movieName};
-//        Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,null, MovieContract.MovieEntry.COLUMN_MOVIE_NAME, selectionArgs, null);
-//        if (cursor!=null){
-//            Toast.makeText(this, "Insertion failed. Item already added.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-
         Uri newUri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, values);
         if (newUri == null) {
             // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(this, "Insertion failed.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Insertion failed. Already added.", Toast.LENGTH_SHORT).show();
         } else {
             // Otherwise, the insertion was successful and we can display a toast.
             Toast.makeText(this, "Inserted item", Toast.LENGTH_SHORT).show();

@@ -44,6 +44,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             }
             notifyDataSetChanged();
         }
+        movieListFromDb=null;
     }
 
     void setImageBitmaps (ArrayList<MovieDataClass> movieList){
@@ -51,6 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         if(movieListFromDb == null){
             Log.e(LOG_TAG, "movieList from DB passed as null");
         }
+        imageURLs=null;
     }
 
 

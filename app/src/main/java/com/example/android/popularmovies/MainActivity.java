@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private String request_url_top_rated = "http://api.themoviedb.org/3/movie/top_rated?api_key=" + key;
     private TextView Empty;
     private ProgressBar progressBar;
-    private String KEY_RECYCLER_STATE = "movies";
+    private Boolean loadFromDB = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,16 +85,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int favID = R.id.action_favourites;
         int clickedID = item.getItemId();
         if (clickedID == popularID) {
+            loadFromDB = false;
             loadMovies(request_url_popular);
             return true;
         }
 
         if (clickedID == topID) {
+            loadFromDB = false;
             loadMovies(request_url_top_rated);
             return true;
         }
 
         if (clickedID == favID){
+            loadFromDB = true;
             getLoaderManager().initLoader(1, null, this);
             return true;
         }
@@ -119,20 +122,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onClick(MovieDataClass thisMovie) {
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo nInfo = connMgr.getActiveNetworkInfo();
+        if(loadFromDB == false) {
+            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo nInfo = connMgr.getActiveNetworkInfo();
 
-        if (nInfo == null || !nInfo.isConnected()) {
-            mToast.makeText(this, "Please check your connection!", Toast.LENGTH_SHORT).show();
-            return;
+            if (nInfo == null || !nInfo.isConnected()) {
+                mToast.makeText(this, "Please check your connection!", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
-
-        mToast.makeText(this, thisMovie.getName(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Bundle extras = new Bundle();
-
+        extras.putBoolean("LOAD_FROM_DATABASE", loadFromDB);
         extras.putString("EXTRA_CURRENT_NAME", thisMovie.getName());
-        extras.putString("EXTRA_CURRENT_IMAGE", thisMovie.getImageURL());
+        if(loadFromDB==false) {
+            extras.putString("EXTRA_CURRENT_IMAGE", thisMovie.getImageURL());
+        }
+        if(loadFromDB==true){
+            extras.putByteArray("EXTRA_CURRENT_IMAGE", thisMovie.getMovie_poster_db());
+        }
         extras.putString("EXTRA_CURRENT_RELEASE", thisMovie.getDate());
         extras.putString("EXTRA_CURRENT_VOTE", thisMovie.getVoteAvg());
         extras.putString("EXTRA_CURRENT_SYNOPSIS", thisMovie.getSynopsis());
@@ -172,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         ArrayList<MovieDataClass> moviesFromDB = new ArrayList<>();
         cursor.moveToFirst();
-        while(cursor.moveToNext()){
+        for(int i = 0; i<cursor.getCount();i++){
             int movieNameColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_NAME);
             int moviePosterColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER);
             int movieRatingColumnIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING);
@@ -194,9 +202,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     cursor.getString(movieReviewLinkColumnIndex),
                     cursor.getString(movieTrailerColumnIndex)
                    );
-
             moviesFromDB.add(movie);
-
+            cursor.moveToNext();
         }
         setupDatabaseView(moviesFromDB);
 
