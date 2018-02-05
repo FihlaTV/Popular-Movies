@@ -7,4 +7,7 @@
     <string name = "most_popular_menu">Most popular</string>
     <string name="top_rated_menu">Top rated</string>
     <string name="favourites_menu">Favourites</string>
+    <string name="trailer">Trailer</string>
+    <string name="review_content">Review Content</string>
+    <string name="author">Author</string>
 </resources>
