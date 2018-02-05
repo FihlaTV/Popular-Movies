@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(false);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
         movieAdapter = new MovieAdapter(this, this);
@@ -227,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private class MovieTask extends AsyncTask<String, Void, ArrayList<MovieDataClass>> {
+        private Boolean running = true;
         @Override
         protected void onPreExecute() {
             progressBar.setVisibility(View.VISIBLE);
@@ -236,19 +237,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         @Override
         protected ArrayList<MovieDataClass> doInBackground(String... strings) {
-            if (strings.length == 0) {
-                return null;
-            }
+                if (strings.length == 0) {
+                    return null;
+                }
 
-            String URL = strings[0];
+                String URL = strings[0];
 
-            try {
-                return NetworkUtils.networkReq(URL, key);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Null returned as MovieDataClasses' ArrayList");
-                e.printStackTrace();
-                return null;
-            }
+                try {
+                    return NetworkUtils.networkReq(URL, key);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Null returned as MovieDataClasses' ArrayList");
+                    e.printStackTrace();
+                    return null;
+                }
+
         }
 
         @Override

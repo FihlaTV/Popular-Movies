@@ -100,8 +100,11 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        SQLiteDatabase database = myDbHelper.getWritableDatabase();
+        getContext().getContentResolver().notifyChange(uri, null);
+        return database.delete(MovieContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
+
     }
 
     @Override

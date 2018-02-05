@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
@@ -34,6 +36,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView movie_review_content;
     private TextView movie_review_author;
     private ImageButton movie_trailer_button;
+    private ImageButton movie_share_button;
     private CardView movie_review_card;
     private FloatingActionButton favouriteButton;
 
@@ -79,11 +82,43 @@ public class DetailActivity extends AppCompatActivity {
         movie_poster = (ImageView) findViewById(R.id.detail_poster);
         if(loadingFromDB==false) {
             Picasso.with(this).load(extras.getString("EXTRA_CURRENT_IMAGE")).into(movie_poster);
+            favouriteButton = (FloatingActionButton) findViewById(R.id.favourite_fab);
+            favouriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    saveMovie(extras);
+                }
+            });
         }
         if(loadingFromDB==true){
             byte[] bitmapData = extras.getByteArray("EXTRA_CURRENT_IMAGE");
             Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
             movie_poster.setImageBitmap(bitmap);
+            favouriteButton = findViewById(R.id.favourite_fab);
+            favouriteButton.setImageResource(R.drawable.ic_delete_black_24dp);
+            favouriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this);
+                    builder.setMessage("Confirm deletion");
+                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            deleteMovie(extras);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            if (dialog != null) {
+                                dialog.dismiss();
+                            }
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
+            });
         }
         movie_trailer_button = findViewById(R.id.trailer_button);
         movie_trailer_button.setOnClickListener(new View.OnClickListener() {
@@ -125,13 +160,25 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        favouriteButton = (FloatingActionButton) findViewById(R.id.favourite_fab);
-        favouriteButton.setOnClickListener(new View.OnClickListener() {
+        movie_share_button = findViewById(R.id.share_button);
+        movie_share_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveMovie(extras);
+                try {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_SUBJECT, extras.getString("EXTRA_CURRENT_NAME"));
+                    String sAux = "\nWatch this awesome trailer of "+extras.getString("EXTRA_CURRENT_NAME")+" from the popular movies app!\n\n";
+                    sAux = sAux + extras.getString("EXTRA_CURRENT_YOUTUBE_URL");
+                    i.putExtra(Intent.EXTRA_TEXT, sAux);
+                    startActivity(Intent.createChooser(i, "choose one"));
+                } catch(Exception e) {
+                    Toast.makeText(DetailActivity.this, "Error sharing trailer!", Toast.LENGTH_SHORT);
+                    return;
+                }
             }
         });
+
 
     }
 
@@ -185,5 +232,12 @@ public class DetailActivity extends AppCompatActivity {
             // Otherwise, the insertion was successful and we can display a toast.
             Toast.makeText(this, "Inserted item", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void deleteMovie(Bundle extras){
+        String selection = MovieContract.MovieEntry.COLUMN_MOVIE_NAME + "=?";
+        String[] selectionArgs = {extras.getString("EXTRA_CURRENT_NAME")};
+        getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, selection, selectionArgs);
+        finish();
     }
 }
