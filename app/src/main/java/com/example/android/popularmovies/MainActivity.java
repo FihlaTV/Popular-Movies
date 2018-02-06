@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private TextView Empty;
     private ProgressBar progressBar;
     private Boolean loadFromDB = false;
+    private String CURRENT_STATE = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +60,55 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Empty = (TextView) findViewById(R.id.empty);
         progressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        loadMovies(requestURL_default);
+        if(savedInstanceState!=null) {
+            if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "Popular") {
+                loadMovies(request_url_popular);
+                loadFromDB = false;
+            } else if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "TOP") {
+                loadMovies(request_url_top_rated);
+                loadFromDB = false;
+            } else if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "DB") {
+                loadFromDB = true;
+                getLoaderManager().initLoader(1, null, this);
+            }
+        }
+        else {
+            loadMovies(requestURL_default);
+            loadFromDB = false;
+        }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("CURRENT", CURRENT_STATE);
+        super.onSaveInstanceState(outState);
     }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        CURRENT_STATE = savedInstanceState.getString("CURRENT");
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
+
+            if (CURRENT_STATE == "Popular") {
+                loadMovies(request_url_popular);
+                loadFromDB = false;
+            } else if (CURRENT_STATE == "TOP") {
+                loadMovies(request_url_top_rated);
+                loadFromDB = false;
+            } else if (CURRENT_STATE == "DB") {
+                loadFromDB = true;
+                getLoaderManager().initLoader(1, null, this);
+            }
+
+        else {
+            loadMovies(request_url_popular);
+            loadFromDB = false;
+        }
     }
 
     @Override
@@ -86,18 +126,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int clickedID = item.getItemId();
         if (clickedID == popularID) {
             loadFromDB = false;
+            CURRENT_STATE = "Popular";
             loadMovies(request_url_popular);
             return true;
         }
 
         if (clickedID == topID) {
             loadFromDB = false;
+            CURRENT_STATE = "Top";
             loadMovies(request_url_top_rated);
             return true;
         }
 
         if (clickedID == favID){
+            Empty.setVisibility(View.GONE);
             loadFromDB = true;
+            CURRENT_STATE = "DB";
             getLoaderManager().initLoader(1, null, this);
             return true;
         }
@@ -227,9 +271,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private class MovieTask extends AsyncTask<String, Void, ArrayList<MovieDataClass>> {
-        private Boolean running = true;
         @Override
         protected void onPreExecute() {
+            mRecyclerView.setAdapter(null);
             progressBar.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.INVISIBLE);
             Empty.setVisibility(View.GONE);
