@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "Popular") {
                 loadMovies(request_url_popular);
                 loadFromDB = false;
-            } else if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "TOP") {
+            } else if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "Top") {
                 loadMovies(request_url_top_rated);
                 loadFromDB = false;
             } else if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "DB") {
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             if (CURRENT_STATE == "Popular") {
                 loadMovies(request_url_popular);
                 loadFromDB = false;
-            } else if (CURRENT_STATE == "TOP") {
+            } else if (CURRENT_STATE == "Top") {
                 loadMovies(request_url_top_rated);
                 loadFromDB = false;
             } else if (CURRENT_STATE == "DB") {
