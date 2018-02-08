@@ -151,7 +151,7 @@ public class NetworkUtils {
                 }
 
                 finally {
-                    MovieDataClass movie = new MovieDataClass(title, releaseDate, voteAvg, synopsis, imageURL, author, content, review_URL, youtube_URL);
+                    MovieDataClass movie = new MovieDataClass(id, title, releaseDate, voteAvg, synopsis, imageURL, author, content, review_URL, youtube_URL);
                     movieList.add(movie);
                 }
             }

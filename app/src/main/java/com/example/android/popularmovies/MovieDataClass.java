@@ -15,8 +15,9 @@ public class MovieDataClass {
     private String review_URL;
     private String youtube_URL;
     private byte[] movie_poster_db;
+    private String id;
 
-    public MovieDataClass(String name, String date, String voteAvg, String synopsis, String imageURL, String review_author, String review_content, String review_URL, String youtube_URL ) {
+    public MovieDataClass(String id, String name, String date, String voteAvg, String synopsis, String imageURL, String review_author, String review_content, String review_URL, String youtube_URL ) {
         this.name = name;
         this.date = date;
         this.voteAvg = voteAvg;
@@ -26,6 +27,7 @@ public class MovieDataClass {
         this.review_content = review_content;
         this.review_URL = review_URL;
         this.youtube_URL = youtube_URL;
+        this.id = id;
     }
 
     public MovieDataClass(String name, String date, String voteAvg, String synopsis, byte[] movie_poster_db, String review_author, String review_content, String review_URL, String youtube_URL){
@@ -69,4 +71,6 @@ public class MovieDataClass {
     public String getYoutube_URL(){ return youtube_URL;}
 
     public byte[] getMovie_poster_db(){ return movie_poster_db;}
+
+    public String getID(){return id;}
 }

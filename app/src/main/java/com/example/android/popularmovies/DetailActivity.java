@@ -9,14 +9,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +31,9 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+
+import static com.example.android.popularmovies.data.MovieProvider.LOG_TAG;
 
 public class DetailActivity extends AppCompatActivity {
     private ImageView movie_poster;
@@ -39,6 +47,10 @@ public class DetailActivity extends AppCompatActivity {
     private ImageButton movie_share_button;
     private CardView movie_review_card;
     private FloatingActionButton favouriteButton;
+    private TrailerListAdapter mTrailerAdapter;
+    private ReviewListAdapter mReviewAdapter;
+    private ListView reviewList;
+    private ListView trailerList;
 
     private byte[] moviePoster;
 
@@ -53,6 +65,12 @@ public class DetailActivity extends AppCompatActivity {
 
         movie_name = (TextView) findViewById(R.id.detail_title);
         movie_name.setText(extras.getString("EXTRA_CURRENT_NAME"));
+
+        reviewList = findViewById(R.id.list_reviews_extra);
+        mReviewAdapter = new ReviewListAdapter(DetailActivity.this, new ArrayList<TrailersAndReviewsDataClass>());
+
+        trailerList = findViewById(R.id.list_trailers_extra);
+        mTrailerAdapter = new TrailerListAdapter(DetailActivity.this, new ArrayList<TrailersAndReviewsDataClass>());
 
         movie_date = (TextView) findViewById(R.id.detail_date);
         movie_date.setText("Released on " + extras.getString("EXTRA_CURRENT_RELEASE"));
@@ -89,6 +107,10 @@ public class DetailActivity extends AppCompatActivity {
                     saveMovie(extras);
                 }
             });
+            ReviewTaskClass reviewTask = new ReviewTaskClass();
+            reviewTask.execute(extras.getString("EXTRA_MOVIE_ID"));
+            TrailerTaskClass trailerTask = new TrailerTaskClass();
+            trailerTask.execute(extras.getString("EXTRA_MOVIE_ID"));
         }
         if(loadingFromDB==true){
             byte[] bitmapData = extras.getByteArray("EXTRA_CURRENT_IMAGE");
@@ -179,7 +201,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     private void saveMovie(Bundle extras){
@@ -239,5 +260,83 @@ public class DetailActivity extends AppCompatActivity {
         String[] selectionArgs = {extras.getString("EXTRA_CURRENT_NAME")};
         getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, selection, selectionArgs);
         finish();
+    }
+
+    public class TrailerTaskClass extends AsyncTask<String, Void, ArrayList<TrailersAndReviewsDataClass>>{
+        @Override
+        protected void onPreExecute() {
+            mTrailerAdapter.clear();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<TrailersAndReviewsDataClass> trailersAndReviewsDataClasses) {
+            if(trailersAndReviewsDataClasses!=null) {
+                mTrailerAdapter.addAll(trailersAndReviewsDataClasses);
+                ViewGroup.LayoutParams params = trailerList.getLayoutParams();
+                params.height = 150 * trailersAndReviewsDataClasses.size();
+                trailerList.setLayoutParams(params);
+                trailerList.setAdapter(mTrailerAdapter);
+            }
+        }
+
+        @Override
+        protected ArrayList<TrailersAndReviewsDataClass> doInBackground(String... strings) {
+            if (strings.length == 0) {
+                return null;
+            }
+            String id = strings[0];
+
+            try {
+                return NetworkUtilsReviewTrailer.networkReqForTrailers(id,MainActivity.key);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Null returned");
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    public class ReviewTaskClass extends AsyncTask<String, Void, ArrayList<TrailersAndReviewsDataClass>>{
+
+        @Override
+        protected void onPreExecute() {
+            mReviewAdapter.clear();
+
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList<TrailersAndReviewsDataClass> trailersAndReviewsDataClasses) {
+            if(trailersAndReviewsDataClasses!=null) {
+                mReviewAdapter.addAll(trailersAndReviewsDataClasses);
+                ViewGroup.LayoutParams params = reviewList.getLayoutParams();
+                params.height = 415 * trailersAndReviewsDataClasses.size();
+                reviewList.setLayoutParams(params);
+                reviewList.setAdapter(mReviewAdapter);
+                reviewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(trailersAndReviewsDataClasses.get(i).getReviewLink()));
+                        startActivity(webIntent);
+                    }
+                });
+            }
+        }
+
+        @Override
+        protected ArrayList<TrailersAndReviewsDataClass> doInBackground(String... strings) {
+            if (strings.length == 0) {
+                return null;
+            }
+            String id = strings[0];
+
+            try {
+                return NetworkUtilsReviewTrailer.networkReqForReviews(id,MainActivity.key);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Null returned");
+                e.printStackTrace();
+                return null;
+            }
+        }
     }
 }

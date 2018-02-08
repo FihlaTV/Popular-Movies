@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, android.app.LoaderManager.LoaderCallbacks<Cursor> {
 
     //Put the API key here
-    private String key = "";
+    public static String key = "3ad2cee013539194fa7e2ad8bc225dea";
 
     private String LOG_TAG;
     private Toast mToast;
@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private String request_url_top_rated = "http://api.themoviedb.org/3/movie/top_rated?api_key=" + key;
     private TextView Empty;
     private ProgressBar progressBar;
-    private Boolean loadFromDB = false;
-    private String CURRENT_STATE = null;
+    private Boolean loadFromDB;
+    private String CURRENT_STATE = "Popular";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,17 +59,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         String requestURL_default = "http://api.themoviedb.org/3/movie/popular?api_key=" + key;
         Empty = (TextView) findViewById(R.id.empty);
         progressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        loadMovies(request_url_popular);
 
         if(savedInstanceState!=null) {
-            if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "Popular") {
+            if (savedInstanceState.getString("CURRENT") == "Popular") {
                 loadMovies(request_url_popular);
                 loadFromDB = false;
-            } else if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "Top") {
+            } else if (savedInstanceState.getString("CURRENT") == "Top") {
                 loadMovies(request_url_top_rated);
                 loadFromDB = false;
-            } else if (savedInstanceState.getString("CURRENT", CURRENT_STATE) == "DB") {
+            } else if (savedInstanceState.getString("CURRENT") == "DB") {
                 loadFromDB = true;
-                getLoaderManager().initLoader(1, null, this);
+              //  getLoaderManager().initLoader(1, null, this);
             }
         }
         else {
@@ -92,22 +93,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onResume() {
         super.onResume();
-        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
 
             if (CURRENT_STATE == "Popular") {
-                loadMovies(request_url_popular);
+//              loadMovies(request_url_popular);
                 loadFromDB = false;
+                return;
             } else if (CURRENT_STATE == "Top") {
-                loadMovies(request_url_top_rated);
+//              loadMovies(request_url_top_rated);
                 loadFromDB = false;
+                return;
             } else if (CURRENT_STATE == "DB") {
                 loadFromDB = true;
-                getLoaderManager().initLoader(1, null, this);
+               // getLoaderManager().initLoader(1, null, this);
+                return;
             }
 
         else {
-            loadMovies(request_url_popular);
+//            loadMovies(request_url_popular);
             loadFromDB = false;
+            return;
         }
     }
 
@@ -179,7 +183,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Bundle extras = new Bundle();
         extras.putBoolean("LOAD_FROM_DATABASE", loadFromDB);
         extras.putString("EXTRA_CURRENT_NAME", thisMovie.getName());
+
         if(loadFromDB==false) {
+            extras.putString("EXTRA_MOVIE_ID", thisMovie.getID());
             extras.putString("EXTRA_CURRENT_IMAGE", thisMovie.getImageURL());
         }
         if(loadFromDB==true){

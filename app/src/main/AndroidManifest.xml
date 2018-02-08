@@ -25,7 +25,7 @@
             android:name=".DetailActivity"
             android:launchMode="singleTop"
             android:label="Details"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity"/>
 
         <provider
             android:authorities="com.example.android.popularmovies"
