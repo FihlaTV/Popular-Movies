@@ -114,8 +114,10 @@ public class DetailActivity extends AppCompatActivity {
         }
         if(loadingFromDB==true){
             byte[] bitmapData = extras.getByteArray("EXTRA_CURRENT_IMAGE");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
-            movie_poster.setImageBitmap(bitmap);
+            if(bitmapData!=null) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
+                movie_poster.setImageBitmap(bitmap);
+            }
             favouriteButton = findViewById(R.id.favourite_fab);
             favouriteButton.setImageResource(R.drawable.ic_delete_black_24dp);
             favouriteButton.setOnClickListener(new View.OnClickListener() {
@@ -266,6 +268,7 @@ public class DetailActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             mTrailerAdapter.clear();
+            trailerList.setVisibility(View.GONE);
         }
 
         @Override
@@ -276,6 +279,7 @@ public class DetailActivity extends AppCompatActivity {
                 params.height = 150 * trailersAndReviewsDataClasses.size();
                 trailerList.setLayoutParams(params);
                 trailerList.setAdapter(mTrailerAdapter);
+                trailerList.setVisibility(View.VISIBLE);
             }
         }
 
@@ -301,7 +305,7 @@ public class DetailActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             mReviewAdapter.clear();
-
+            reviewList.setVisibility(View.GONE);
         }
 
         @Override
@@ -312,6 +316,7 @@ public class DetailActivity extends AppCompatActivity {
                 params.height = 415 * trailersAndReviewsDataClasses.size();
                 reviewList.setLayoutParams(params);
                 reviewList.setAdapter(mReviewAdapter);
+                reviewList.setVisibility(View.VISIBLE);
                 reviewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

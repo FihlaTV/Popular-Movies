@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, android.app.LoaderManager.LoaderCallbacks<Cursor> {
 
     //Put the API key here
-    public static String key = "3ad2cee013539194fa7e2ad8bc225dea";
+    public static String key = "";
 
     private String LOG_TAG;
     private Toast mToast;

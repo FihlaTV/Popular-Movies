@@ -118,7 +118,7 @@
                         android:layout_margin="10dp"
                         android:text="@string/listed_trailers"
                         android:textColor="#FFF"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textStyle="bold|italic" />
 
                     <ImageView
